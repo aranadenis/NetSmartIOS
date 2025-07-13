@@ -1,7 +1,42 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<div class="text-center" style="padding: 2rem; font-family: 'Segoe UI', sans-serif;">
+    <img src="images/kids-games-banner.jpg" alt="Juegos para niños" style="width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 2rem;" />
 
-<h1>Hello, world!</h1>
+    <h1 style="color: #2c3e50; font-weight: bold;">Bienvenido a <span style="color:#27ae60">NetSmart</span></h1>
+    <p style="color: #555; font-size: 1.1rem; margin-bottom: 2rem;">Explora juegos educativos divertidos para niños.</p>
 
-Welcome to your new app.
+    <div class="d-flex flex-wrap justify-content-center gap-4">
+        <NavLink href="/tabla-multiplicar" class="text-decoration-none">
+            <div style="width: 140px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                <img src="images/multiplicar.jpg" alt="Colores y Figuras" style="width: 100%; height: 130px; object-fit: cover;" />
+                <div style="background-color: #f1f1f1; padding: 0.5rem; font-weight: bold;">Tablas</div>
+            </div>
+        </NavLink>
+
+        <NavLink href="/ContarAnimales" class="text-decoration-none">
+            <div style="width: 140px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                <img src="images/contar-animales.jpg" alt="Cuenta los Animales" style="width: 100%; height: 130px; object-fit: cover;" />
+                <div style="background-color: #f1f1f1; padding: 0.5rem; font-weight: bold;">Animales</div>
+            </div>
+        </NavLink>
+
+
+        <NavLink href="/math" class="text-decoration-none">
+            <div style="width: 140px; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                <img src="images/juego-operaciones.jpg" alt="Sumas, restas y multiplicación" style="width: 100%; height: 130px; object-fit: cover;" />
+                <div style="background-color: #f1f1f1; padding: 0.5rem; font-weight: bold;">Operaciones</div>
+            </div>
+        </NavLink>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+

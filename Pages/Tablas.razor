@@ -1,0 +1,94 @@
+﻿@page "/tabla-multiplicar"
+
+@inject IJSRuntime JS
+
+<h3>✖️ Tablas de Multiplicar (2 al 9)</h3>
+<p><strong>¿Cuánto es @numero1 × @numero2?</strong></p>
+
+<div class="d-flex flex-wrap gap-3">
+    @foreach (var opcion in opcionesRespuesta)
+    {
+        <button class="btn @(mostrarResultado ? (opcion == resultadoCorrecto ? "btn-success" : "btn-danger") : "btn-primary")"
+                style="width: 80px; height: 50px; font-size: 20px"
+                disabled="@mostrarResultado"
+                @onclick="() => VerificarRespuesta(opcion)">
+            @opcion
+        </button>
+    }
+</div>
+
+@if (mensaje != null)
+{
+    <div class="mt-3" style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px; color:@colorMensaje">
+            @if (respuestaCorrecta)
+            {
+                <i class="fas fa-check-circle"></i>
+            }
+            else
+            {
+                <i class="fas fa-times-circle"></i>
+            }
+        </span>
+        <p style="margin: 0; color:@colorMensaje">@mensaje</p>
+    </div>
+}
+
+<button class="btn btn-secondary mt-4" @onclick="GenerarPregunta">Nueva pregunta</button>
+
+
+
+
+
+@code {
+    private int numero1;
+    private int numero2;
+    private int resultadoCorrecto;
+    private List<int> opcionesRespuesta = new();
+    private string mensaje;
+    private string colorMensaje = "black";
+    private bool mostrarResultado = false;
+    private bool respuestaCorrecta = false;
+    private Random rnd = new();
+
+    protected override void OnInitialized() => GenerarPregunta();
+
+    private void GenerarPregunta()
+    {
+        numero1 = rnd.Next(2, 10);
+        numero2 = rnd.Next(1, 11);
+        resultadoCorrecto = numero1 * numero2;
+
+        var respuestas = new HashSet<int> { resultadoCorrecto };
+        while (respuestas.Count < 3)
+        {
+            int incorrecta = resultadoCorrecto + rnd.Next(-10, 10);
+            if (incorrecta != resultadoCorrecto && incorrecta > 0)
+                respuestas.Add(incorrecta);
+        }
+
+        opcionesRespuesta = respuestas.OrderBy(x => rnd.Next()).ToList();
+        mensaje = null;
+        mostrarResultado = false;
+    }
+
+    private async Task VerificarRespuesta(int seleccionada)
+    {
+        mostrarResultado = true;
+        if (seleccionada == resultadoCorrecto)
+        {
+            mensaje = "Correcto ✅";
+            colorMensaje = "green";
+            respuestaCorrecta = true;
+            await JS.InvokeVoidAsync("playSound", "sonidoCorrecto");
+        }
+        else
+        {
+            mensaje = $"Incorrecto ❌ La respuesta correcta era {resultadoCorrecto}";
+            colorMensaje = "red";
+            respuestaCorrecta = false;
+            await JS.InvokeVoidAsync("playSound", "sonidoIncorrecto");
+        }
+    }
+}
+

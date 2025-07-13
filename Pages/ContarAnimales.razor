@@ -1,0 +1,151 @@
+﻿@page "/ContarAnimales"
+@inject IJSRuntime JS
+
+<h3>🐾 ¿Cuántos animales hay?</h3>
+
+<div class="d-flex flex-wrap gap-2" style="font-size: 48px;">
+    @foreach (var emoji in animalesEmoji)
+
+    {
+        <span>@emoji</span>
+    }
+</div>
+
+<div class="mt-3">
+    @foreach (var opcion in opcionesRespuestaAnimales)
+
+    {
+        <button class="btn @(mostrarResultadoAnimales ? (opcion == cantidadCorrecta ? "btn-success" : "btn-danger") : "btn-primary")"
+                style="width: 60px; height: 50px; font-size: 20px"
+                disabled="@mostrarResultadoAnimales"
+                @onclick="() => VerificarRespuestaAnimales(opcion)">
+            @opcion
+        </button>
+    }
+</div>
+
+@if (mensajeAnimales != null)
+
+{
+    <div class="mt-3" style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px; color:@colorMensajeAnimales">
+            @if (respuestaCorrectaAnimales)
+
+            {
+                <i class="fas fa-check-circle"></i>
+            }
+
+            else
+
+            {
+                <i class="fas fa-times-circle"></i>
+            }
+        </span>
+        <p style="margin: 0; color:@colorMensajeAnimales">@mensajeAnimales</p>
+    </div>
+}
+
+<button class="btn btn-secondary mt-4" @onclick="GenerarAnimales">Nueva pregunta</button>
+
+<audio id="sonidoCorrecto" src="sounds/correct.mp3"></audio>
+<audio id="sonidoIncorrecto" src="sounds/wrong.mp3"></audio>
+
+@code {
+    private List<string> animalesEmoji = new();
+
+    private int cantidadCorrecta;
+
+    private List<int> opcionesRespuestaAnimales = new();
+
+    private string mensajeAnimales;
+
+    private string colorMensajeAnimales = "black";
+
+    private bool mostrarResultadoAnimales = false;
+
+    private bool respuestaCorrectaAnimales = false;
+
+    private Random rnd = new();
+
+    private readonly string[] emojis = new[] { "🐶", "🐱", "🐰", "🦊", "🐻", "🐸", "🐵" };
+
+
+
+    protected override void OnInitialized() => GenerarAnimales();
+
+
+
+    private void GenerarAnimales()
+
+    {
+
+        string emojiSeleccionado = emojis[rnd.Next(emojis.Length)];
+
+        cantidadCorrecta = rnd.Next(3, 7);
+
+        animalesEmoji = Enumerable.Repeat(emojiSeleccionado, cantidadCorrecta).ToList();
+
+
+
+        var respuestas = new HashSet<int> { cantidadCorrecta };
+
+        while (respuestas.Count < 3)
+
+        {
+
+            int incorrecta = rnd.Next(1, 10);
+
+            if (incorrecta != cantidadCorrecta)
+
+                respuestas.Add(incorrecta);
+
+        }
+
+
+
+        opcionesRespuestaAnimales = respuestas.OrderBy(x => rnd.Next()).ToList();
+
+        mensajeAnimales = null;
+
+        mostrarResultadoAnimales = false;
+
+    }
+
+
+
+    private async Task VerificarRespuestaAnimales(int seleccionada)
+
+    {
+
+        mostrarResultadoAnimales = true;
+
+        if (seleccionada == cantidadCorrecta)
+
+        {
+
+            mensajeAnimales = "Correcto ✅";
+
+            colorMensajeAnimales = "green";
+
+            respuestaCorrectaAnimales = true;
+
+            await JS.InvokeVoidAsync("playSound", "sonidoCorrecto");
+
+        }
+
+        else
+
+        {
+
+            mensajeAnimales = $"Incorrecto ❌ La respuesta correcta era {cantidadCorrecta}";
+
+            colorMensajeAnimales = "red";
+
+            respuestaCorrectaAnimales = false;
+
+            await JS.InvokeVoidAsync("playSound", "sonidoIncorrecto");
+
+        }
+
+    }
+}
